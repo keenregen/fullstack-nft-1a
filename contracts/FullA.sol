@@ -1,59 +1,92 @@
 // SPDX-License-Identifier: BLANK
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts@4.8.3/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts@4.8.3/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts@4.8.3/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts@4.8.3/security/Pausable.sol";
+import "@openzeppelin/contracts@4.8.3/access/Ownable.sol";
+import "@openzeppelin/contracts@4.8.3/token/ERC721/extensions/ERC721Burnable.sol";
 
-contract FullA is ERC721, ERC721Enumerable, ERC721Burnable, Ownable {
-    using Counters for Counters.Counter;
+contract FullA is ERC721Enumerable, Ownable {
+    using Strings for uint256;
+    string public baseURI;
+    //   string public baseExtension = "";
+    uint256 public cost = 0.00001 ether;
+    uint256 public maxSupply = 1000;
+    uint256 public maxMintAmount = 5;
+    bool public paused = false;
 
-    Counters.Counter private _tokenIdCounter;
+    constructor() ERC721("FullA", "fula") {}
 
-    uint256 public cost = 0.0001 ether;
-    uint256 public maxSupply = 4;
-    uint256 public maxMintAmount = 3;
-
-    constructor() ERC721("FullA NfT Collection", "FULA") {}
-
-    function _baseURI() internal pure override returns (string memory) {
+    // internal
+    function _baseURI() internal view virtual override returns (string memory) {
         return "ipfs://QmfKNungiCseunEyJRYQz2foYZbWigahzdkryME3Z2Dsze/";
     }
 
-    function safeMint(address to, uint256 _mintAmount) public payable {
+    // public
+
+    function mint(address _to, uint256 _mintAmount) public payable {
         uint256 supply = totalSupply();
+        require(!paused);
         require(_mintAmount > 0);
         require(_mintAmount <= maxMintAmount);
         require(supply + _mintAmount <= maxSupply);
 
         if (msg.sender != owner()) {
-            require(
-                msg.value == (cost * _mintAmount),
-                "You need to pay 0.0001 ETH!"
-            );
+            require(msg.value == cost * _mintAmount, "You should send 0.0001.");
         }
 
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
-        _safeMint(to, tokenId);
+        for (uint256 i = 0; i < _mintAmount; i++) {
+            _safeMint(_to, supply + i);
+        }
     }
 
-    // The following functions are overrides required by Solidity.
-
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId,
-        uint256 batchSize
-    ) internal override(ERC721, ERC721Enumerable) {
-        super._beforeTokenTransfer(from, to, tokenId, batchSize);
+    function walletOfOwner(
+        address _owner
+    ) public view returns (uint256[] memory) {
+        uint256 ownerTokenCount = balanceOf(_owner);
+        uint256[] memory tokenIds = new uint256[](ownerTokenCount);
+        for (uint256 i; i < ownerTokenCount; i++) {
+            tokenIds[i] = tokenOfOwnerByIndex(_owner, i);
+        }
+        return tokenIds;
     }
 
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view override(ERC721, ERC721Enumerable) returns (bool) {
-        return super.supportsInterface(interfaceId);
+    function tokenURI(
+        uint256 tokenId
+    ) public view virtual override returns (string memory) {
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: URI query for nonexistent token"
+        );
+
+        string memory currentBaseURI = _baseURI();
+        return
+            bytes(currentBaseURI).length > 0
+                ? string(abi.encodePacked(currentBaseURI, tokenId.toString()))
+                : "";
+    }
+
+    // only owner
+
+    function setmaxMintAmount(uint256 _newmaxMintAmount) public onlyOwner {
+        maxMintAmount = _newmaxMintAmount;
+    }
+
+    function setBaseURI(string memory _newBaseURI) public onlyOwner {
+        baseURI = _newBaseURI;
+    }
+
+    //        function setBaseExtension(string memory _newBaseExtension) public onlyOwner() {
+    //            baseExtension = _newBaseExtension;
+    //        }
+
+    function pause(bool _state) public onlyOwner {
+        paused = _state;
+    }
+
+    function withdraw() public payable onlyOwner {
+        require(payable(msg.sender).send(address(this).balance));
     }
 }
