@@ -30,7 +30,7 @@ contract FullA is ERC721Enumerable, Ownable {
         uint256 supply = totalSupply();
         require(!paused);
         require(_mintAmount > 0, "Mint amount should be greater than 0.");
-        require(_mintAmount <= maxMintAmount, "Max mint amout is 2.");
+        require(_mintAmount <= maxMintAmount, "Max mint amount is 2.");
         require(
             supply + _mintAmount <= maxSupply,
             "All NFTs from this collection were minted."
@@ -92,7 +92,7 @@ contract FullA is ERC721Enumerable, Ownable {
     function withdraw() public payable onlyOwner {
         require(
             payable(msg.sender).send(address(this).balance),
-            "There is a problem, it might be that your are not allowed"
+            "There is a problem, it might be that you are not allowed."
         );
     }
 }
