@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: BLANK
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts@4.8.3/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts@4.8.3/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts@4.8.3/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts@4.8.3/security/Pausable.sol";
-import "@openzeppelin/contracts@4.8.3/access/Ownable.sol";
-import "@openzeppelin/contracts@4.8.3/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
+// bsc 0xf5F7d163bAFffe60d307e20F0F836a402b8fE1FC
 contract FullA is ERC721Enumerable, Ownable {
     using Strings for uint256;
     string public baseURI;
