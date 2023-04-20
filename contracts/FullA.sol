@@ -8,14 +8,13 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
-// bsc 0xf5F7d163bAFffe60d307e20F0F836a402b8fE1FC
 contract FullA is ERC721Enumerable, Ownable {
     using Strings for uint256;
     string public baseURI;
     //   string public baseExtension = "";
     uint256 public cost = 0.00001 ether;
-    uint256 public maxSupply = 1000;
-    uint256 public maxMintAmount = 5;
+    uint256 public maxSupply = 4;
+    uint256 public maxMintAmount = 2;
     bool public paused = false;
 
     constructor() ERC721("FullA", "fula") {}
