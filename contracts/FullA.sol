@@ -12,7 +12,7 @@ contract FullA is ERC721Enumerable, Ownable {
     using Strings for uint256;
     string public baseURI;
     //   string public baseExtension = "";
-    uint256 public cost = 0.00001 ether;
+    uint256 public cost = 0.01 ether;
     uint256 public maxSupply = 4;
     uint256 public maxMintAmount = 2;
     bool public paused = false;
@@ -37,7 +37,10 @@ contract FullA is ERC721Enumerable, Ownable {
         );
 
         if (msg.sender != owner()) {
-            require(msg.value == cost * _mintAmount, "You should send 0.0001.");
+            require(
+                msg.value == cost * _mintAmount,
+                "You should send 0.01 to mint."
+            );
         }
 
         for (uint256 i = 0; i < _mintAmount; i++) {
